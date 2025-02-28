@@ -15,17 +15,12 @@ class UserProfileController extends Controller
      */
     public function showProfile(Request $request): View
     {
-       // Récupérer tous les utilisateurs
-    $users = User::all();
+        // Récupérer l'utilisateur connecté avec ses relations
+        $user = Auth::user()->load(['subjects', 'course']);
 
-    // Récupérer toutes les matières disponibles pour le filtre
-    $subjects = Subject::all();
-
-    // Passer les utilisateurs et les matières à la vue
-    return view('levelup.index', [
-        'users' => $users,
-        'subjects' => $subjects
-    ]);
+        return view('profile.show', [
+            'user' => $user
+        ]);
     }
 
 }

@@ -102,15 +102,21 @@
                         </p>
                         <!-- Bouton "Envoyer un message" -->
                         <button type="button"
-                            class="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-800 open-modal"
-                            data-user-id="{{ $user->id }}" data-user-name="{{ $user->name }}">
+                            onclick="openMessageModal('{{ $user->id }}', '{{ $user->name }}')"
+                            class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z"/>
+                            </svg>
                             Envoyer un message
                         </button>
 
                         <!-- Bouton "Réserver une session" -->
                         <button type="button"
-                            class="block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-800 open-reservation-modal"
-                            data-user-id="{{ $user->id }}" data-user-name="{{ $user->name }}">
+                            onclick="openReservationModal('{{ $user->id }}')"
+                            class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
                             Réserver une session
                         </button>
                     </div>
@@ -124,35 +130,62 @@
     <!-- Modal d'envoi de message -->
     <div id="messageModal" class="hidden fixed inset-0 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
             <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <div class="absolute top-0 right-0 pt-4 pr-4">
+                    <button type="button" id="closeMessageModal" class="text-gray-400 hover:text-gray-500">
+                        <span class="sr-only">Fermer</span>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
                 <div class="sm:flex sm:items-start">
                     <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
                         <h3 class="text-lg leading-6 font-medium text-gray-900" id="messageModalTitle">
                             Envoyer un message
                         </h3>
+
                         <div class="mt-4">
-                            <form id="messageForm">
-                                <input type="hidden" id="messageUserId" name="user_id">
-                                <div class="mt-2">
-                                    <textarea id="message" name="message" rows="4"
-                                        class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
-                                        placeholder="Écrivez votre message ici..."></textarea>
+                            <form id="messageForm" class="space-y-4">
+                                @csrf
+                                <input type="hidden" id="messageUserId" name="recipient_id">
+
+                                <div>
+                                    <label for="message" class="block text-sm font-medium text-gray-700">
+                                        Votre message
+                                    </label>
+                                    <div class="mt-1">
+                                        <textarea
+                                            id="message"
+                                            name="message"
+                                            rows="4"
+                                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                            placeholder="Écrivez votre message ici..."
+                                        ></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                    <button
+                                        type="submit"
+                                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    >
+                                        Envoyer
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm"
+                                        onclick="closeMessageModal()"
+                                    >
+                                        Annuler
+                                    </button>
                                 </div>
                             </form>
                         </div>
                     </div>
-                </div>
-                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                    <button type="button" id="sendMessage"
-                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                        Envoyer
-                    </button>
-                    <button type="button" id="cancelMessage"
-                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm">
-                        Annuler
-                    </button>
                 </div>
             </div>
         </div>
@@ -164,34 +197,83 @@
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
 
             <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <div class="absolute top-0 right-0 pt-4 pr-4">
+                    <button type="button" onclick="closeReservationModal()" class="text-gray-400 hover:text-gray-500">
+                        <span class="sr-only">Fermer</span>
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
                 <div class="sm:flex sm:items-start">
                     <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
                         <h3 class="text-lg leading-6 font-medium text-gray-900">
                             Réserver une session
                         </h3>
-                        <div class="mt-4">
-                            <form id="reservationForm">
-                                <input type="hidden" id="teacherId" name="user_id">
-                                <div class="mt-2">
-                                    <label for="sessionDate" class="block text-sm font-medium text-gray-700">
-                                        Date et heure de la session
-                                    </label>
-                                    <input type="datetime-local" id="sessionDate" name="session_date"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                </div>
-                            </form>
-                        </div>
+
+                        <form id="reservationForm" class="mt-6 space-y-6">
+                            <input type="hidden" id="teacherId" name="teacher_id">
+                            
+                            <div>
+                                <label for="date" class="block text-sm font-medium text-gray-700">
+                                    Date de la session
+                                </label>
+                                <input type="date" 
+                                       name="date" 
+                                       id="date" 
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                                       required>
+                            </div>
+
+                            <div>
+                                <label for="time" class="block text-sm font-medium text-gray-700">
+                                    Heure de la session
+                                </label>
+                                <input type="time" 
+                                       name="time" 
+                                       id="time" 
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                                       required>
+                            </div>
+
+                            <div>
+                                <label for="duration" class="block text-sm font-medium text-gray-700">
+                                    Durée (en heures)
+                                </label>
+                                <select name="duration" 
+                                        id="duration" 
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                                    <option value="1">1 heure</option>
+                                    <option value="1.5">1h30</option>
+                                    <option value="2">2 heures</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="notes" class="block text-sm font-medium text-gray-700">
+                                    Notes ou demandes particulières
+                                </label>
+                                <textarea name="notes" 
+                                          id="notes" 
+                                          rows="3" 
+                                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                                          placeholder="Précisez vos besoins ou questions..."></textarea>
+                            </div>
+
+                            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                <button type="submit"
+                                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                    Confirmer la réservation
+                                </button>
+                                <button type="button"
+                                        onclick="closeReservationModal()"
+                                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:w-auto sm:text-sm">
+                                    Annuler
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </div>
-                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                    <button type="button" id="confirmReservation"
-                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                        Confirmer
-                    </button>
-                    <button type="button" id="cancelReservation"
-                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm">
-                        Annuler
-                    </button>
                 </div>
             </div>
         </div>
@@ -202,125 +284,145 @@
         function openMessageModal(userId, userName) {
             document.getElementById('messageUserId').value = userId;
             document.getElementById('messageModalTitle').textContent = `Envoyer un message à ${userName}`;
-            const modal = document.getElementById('messageModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            document.getElementById('messageModal').classList.remove('hidden');
         }
 
         // Fonction pour fermer le modal de message
         function closeMessageModal() {
-            const modal = document.getElementById('messageModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            document.getElementById('messageModal').classList.add('hidden');
             document.getElementById('message').value = '';
         }
 
-        // Gestionnaire d'événements pour le bouton "Envoyer un message"
-        document.querySelectorAll('.open-modal').forEach(button => {
-            button.addEventListener('click', () => {
-                const userId = button.getAttribute('data-user-id');
-                const userName = button.getAttribute('data-user-name');
-                openMessageModal(userId, userName);
-            });
-        });
-
-        // Gestionnaire d'événements pour le bouton "Annuler" du modal de message
-        document.getElementById('cancelMessage').addEventListener('click', closeMessageModal);
-
-        // Gestionnaire d'événements pour le bouton "Envoyer" du modal de message
-        document.getElementById('sendMessage').addEventListener('click', () => {
-            const form = document.getElementById('messageForm');
-            const formData = new FormData(form);
-            formData.append('message', document.getElementById('message').value);
-
-            fetch('/messages/send', {
+        // Gestionnaire de soumission du formulaire de message
+        document.getElementById('messageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('{{ route('messages.send') }}', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(Object.fromEntries(formData))
+                body: JSON.stringify({
+                    recipient_id: formData.get('recipient_id'),
+                    message: formData.get('message')
+                })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Message envoyé avec succès !');
+                    // Afficher un message de succès
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg';
+                    successMessage.textContent = 'Message envoyé avec succès !';
+                    document.body.appendChild(successMessage);
+                    
+                    // Fermer le modal
                     closeMessageModal();
-                } else {
-                    alert('Erreur lors de l\'envoi du message');
+                    
+                    // Supprimer le message après 3 secondes
+                    setTimeout(() => {
+                        successMessage.remove();
+                    }, 3000);
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                alert('Erreur lors de l\'envoi du message');
+                // Afficher un message d'erreur
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg';
+                errorMessage.textContent = 'Une erreur est survenue lors de l\'envoi du message.';
+                document.body.appendChild(errorMessage);
+                
+                setTimeout(() => {
+                    errorMessage.remove();
+                }, 3000);
             });
         });
 
+        // Fermer le modal en cliquant sur le bouton de fermeture
+        document.getElementById('closeMessageModal').addEventListener('click', closeMessageModal);
+
+        // Fermer le modal en cliquant en dehors
+        window.addEventListener('click', (event) => {
+            const modal = document.getElementById('messageModal');
+            if (event.target === modal) {
+                closeMessageModal();
+            }
+        });
+    </script>
+
+    <script>
         // Fonction pour ouvrir le modal de réservation
         function openReservationModal(userId) {
             document.getElementById('teacherId').value = userId;
-            const modal = document.getElementById('reservationModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            document.getElementById('reservationModal').classList.remove('hidden');
+            
+            // Définir la date minimale à aujourd'hui
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').min = today;
         }
 
         // Fonction pour fermer le modal de réservation
         function closeReservationModal() {
-            const modal = document.getElementById('reservationModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            document.getElementById('reservationModal').classList.add('hidden');
+            document.getElementById('reservationForm').reset();
         }
 
-        // Gestionnaire d'événements pour le bouton "Réserver une session"
-        document.querySelectorAll('.open-reservation-modal').forEach(button => {
-            button.addEventListener('click', () => {
-                const userId = button.getAttribute('data-user-id');
-                openReservationModal(userId);
-            });
-        });
-
-        // Gestionnaire d'événements pour le bouton "Annuler"
-        document.getElementById('cancelReservation').addEventListener('click', closeReservationModal);
-
-        // Gestionnaire d'événements pour le bouton "Confirmer"
-        document.getElementById('confirmReservation').addEventListener('click', () => {
-            const form = document.getElementById('reservationForm');
-            const formData = new FormData(form);
-
-            fetch('/reservations', {
+        // Gestionnaire de soumission du formulaire de réservation
+        document.getElementById('reservationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('{{ route('reservations.store') }}', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(Object.fromEntries(formData))
+                body: JSON.stringify({
+                    teacher_id: formData.get('teacher_id'),
+                    date: formData.get('date'),
+                    time: formData.get('time'),
+                    duration: formData.get('duration'),
+                    notes: formData.get('notes')
+                })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Réservation effectuée avec succès !');
+                    // Afficher un message de succès
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg';
+                    successMessage.textContent = 'Réservation confirmée avec succès !';
+                    document.body.appendChild(successMessage);
+                    
+                    // Fermer le modal
                     closeReservationModal();
-                } else {
-                    alert('Erreur lors de la réservation');
+                    
+                    // Supprimer le message après 3 secondes
+                    setTimeout(() => {
+                        successMessage.remove();
+                    }, 3000);
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                alert('Erreur lors de la réservation');
+                // Afficher un message d'erreur
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg';
+                errorMessage.textContent = 'Une erreur est survenue lors de la réservation.';
+                document.body.appendChild(errorMessage);
+                
+                setTimeout(() => {
+                    errorMessage.remove();
+                }, 3000);
             });
-        });
-
-        // Fermer les modals en cliquant sur l'arrière-plan
-        window.addEventListener('click', (event) => {
-            const messageModal = document.getElementById('messageModal');
-            const reservationModal = document.getElementById('reservationModal');
-            
-            if (event.target === messageModal) {
-                closeMessageModal();
-            }
-            if (event.target === reservationModal) {
-                closeReservationModal();
-            }
         });
     </script>
 

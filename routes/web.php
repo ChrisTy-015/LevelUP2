@@ -24,6 +24,16 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
+    // Routes pour la messagerie
+    Route::get('/messages/{recipient}', [MessageController::class, 'index'])->name('messages.show');
+    Route::post('/messages/send', [MessageController::class, 'send'])->name('messages.send');
+});
+
+// Routes pour les messages
+Route::middleware(['auth'])->group(function () {
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{user}', [MessageController::class, 'conversation'])->name('messages.conversation');
+    Route::post('/messages/send', [MessageController::class, 'send'])->name('messages.send');
 });
 
 // Route pour le filtrage des utilisateurs
@@ -37,8 +47,6 @@ require __DIR__.'/auth.php';
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('register');
 
 Route::post('/profile/photo/update', [ProfileController::class, 'updateProfilePhoto'])->name('profile.photo.update');
-
-Route::post('/messages/send', [MessageController::class, 'send'])->name('messages.send');
 
 Route::post('/sessions/reserve', [SessionsUserController::class, 'reserve'])->name('sessions.reserve');
 
