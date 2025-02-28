@@ -90,9 +90,15 @@
                         <p class="text-sm text-gray-600 mt-2">{{ $user->biography }}</p>
                         <p class="text-sm text-gray-600 mt-2">
                             Matières enseignées :
-                            @foreach($user->subjects as $subject)
-                                <span class="text-purple-500">{{ $subject->name }}</span>{{ !$loop->last ? ',' : '' }}
-                            @endforeach
+                            @if($user->subjects->count() > 0)
+                                @foreach($user->subjects as $subject)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1">
+                                        {{ $subject->name }}
+                                    </span>
+                                @endforeach
+                            @else
+                                <span class="text-gray-500">Aucune matière spécifiée</span>
+                            @endif
                         </p>
                         <!-- Bouton "Envoyer un message" -->
                         <button type="button"

@@ -25,6 +25,10 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'subjects' => ['required', 'array'],
+            'subjects.*' => ['exists:subjects,id'],
+            'course_id' => ['required', 'exists:courses,id'],
+            'status' => ['required', 'in:Mentee,Mentor,Les deux'],
         ];
     }
 }

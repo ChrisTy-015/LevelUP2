@@ -38,36 +38,33 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        // Validation des données, y compris les matières et le statut
+        // Validation des données
         $request->validate([
-            'course_id' => 'required|exists:courses,id', // Formation obligatoire
-            'subject_id' => 'required|exists:subjects,id',  // Chaque matière doit exister
-            'status' => 'required|in:Mentee,Mentor,Les deux', // Statut obligatoire
+            'course_id' => 'required|exists:courses,id',
+            'subjects' => 'required|array',
+            'subjects.*' => 'exists:subjects,id',
+            'status' => 'required|in:Mentee,Mentor,Les deux',
         ]);
 
-        $user = auth()->user();
+        $user = $request->user();
 
-        // Mise à jour des informations de profil
+        // Mise à jour des informations de base du profil
         $user->fill($request->validated());
 
-        // Si l'email est modifié, le marquer comme non vérifié
-        if ($request->user()->isDirty('email')) {
+        if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }
+
+        // Mise à jour du statut et de la formation
+        $user->status = $request->status;
+        $user->course_id = $request->course_id;
+        
+        // Sauvegarde des changements de base
+        $user->save();
 
         // Synchronisation des matières sélectionnées
         $user->subjects()->sync($request->subjects);
 
-        // Mise à jour du statut
-        $user->status = $request->status;
-
-        // Mise à jour de la formation
-        $user->course_id = $request->course_id;
-
-        // Sauvegarde de l'utilisateur
-        $user->save();
-
-        // Redirection avec un message de succès
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 

@@ -22,6 +22,7 @@ class User extends Authenticatable
         'biography',          // Ajout de la biographie
         'status',             // Ajout du statut
         'profile_photo', // Ajout du chemin de la photo de profil
+        'course_id',
     ];
 
     /**
@@ -58,4 +59,3 @@ class User extends Authenticatable
         return $this->belongsToMany(Subject::class, 'subject_user', 'user_id', 'subject_id');
     }
 }
-
